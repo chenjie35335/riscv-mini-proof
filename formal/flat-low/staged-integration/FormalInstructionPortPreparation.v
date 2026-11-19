@@ -1,0 +1,58 @@
+Require Import CoreSocModel ComparisonNodes MemoryPortPreparation FormalSingletonAnyPreparation StagedFlatCircuitIteration ExternalReset FormalLocalHistory RegisterInvariants InstructionPortConnection FormalInstructionPortInvariant.
+From Coq Require Import ZArith.
+From mathcomp Require Import ssreflect ssrbool ssrnat eqtype seq.
+From simplssrlib Require Import Var.
+From firrtl Require Import Env_with_implicit_widths Firrtl_with_implicit_widths HiEnv_with_implicit_widths HiFirrtl_with_implicit_widths Semantics_with_implicit_widths Semantics_with_memory.
+Local Open Scope N_scope.
+Definition instruction_port_memory := @mk_fmem VarOrder.T 9177 (Gtyp (Fuint 32)) 16 [:: @mk_mem_port VarOrder.T 0 0 1 2 3] [::] 0 1 undefined.
+Lemma instruction_port_initial_safe : initial_port_safe 9176 flat_statements.
+Proof. vm_compute. reflexivity. Qed.
+Lemma instruction_port_initial_description : port_seed_description 9176 flat_statements None = Some instruction_port_memory.
+Proof. vm_compute. reflexivity. Qed.
+Lemma instruction_port_initial_value env :
+ VM.find 9176 env = Some (memory_bundle_initial instruction_port_memory) -> instruction_port_typed env.
+Proof.
+ intro Value.
+ exists (Needtobedefined (Gtyp (Fuint 16))), (Needtobedefined (Gtyp (Fuint 1))),
+ (Needtobedefined (Gtyp Fclock)), (Needtobedefined (Gtyp (Fuint 1))), (Needtobedefined (Gtyp (Fuint 32))).
+ split; [exact Value|]. repeat split; reflexivity.
+Qed.
+Theorem instruction_port_statements_prepared modules previous current result :
+ statements_initial_map_with_memory modules flat_statements previous current = Some result ->
+ VM.find 9176 result = Some (memory_bundle_initial instruction_port_memory).
+Proof.
+ intro Step.
+ pose proof (initial_port_projection flat_statements modules previous current result 9176 None (VM.find 9176 current)
+ instruction_port_initial_safe (Logic.eq_refl _) Step) as Value.
+ rewrite instruction_port_initial_description in Value. exact Value.
+Qed.
+Lemma external_ports_preserve_instruction_port initial external result :
+ update_external_ports initial external top_ports = Some result ->
+ VM.find 9176 result = VM.find 9176 initial.
+Proof.
+ intro Step.
+ change (match VM.find 0 external with
+ | Some clock => match VM.find 1 external with
+ | Some reset => Some (VM.add 1 reset (VM.add 0 clock initial))
+ | None => None end | None => None end = Some result) in Step.
+ destruct (VM.find 0 external); [|discriminate Step].
+ destruct (VM.find 1 external); [|discriminate Step].
+ inversion Step; subst result.
+ rewrite RegisterMapFacts.find_add_neq; [|discriminate].
+ rewrite RegisterMapFacts.find_add_neq; [|discriminate]. reflexivity.
+Qed.
+Local Opaque generated_modules generated_top.
+Theorem circuit_instruction_port_prepared previous external prepared :
+ circuit_initial_map_with_memory generated_modules generated_top previous external = Some prepared ->
+ instruction_port_typed (top_environment prepared).
+Proof.
+ intro Prepare.
+ destruct (singleton_any_prepared_property generated_modules generated_top 0 top_ports flat_statements previous external prepared
+ (fun env => VM.find 9176 env = Some (memory_bundle_initial instruction_port_memory))
+ flat_instance_map_exact flat_module_exact (Logic.eq_refl _)) as [env [Env Value]].
+ - intros old initial Init. exact (instruction_port_statements_prepared generated_modules old _ initial Init).
+ - intros initial result Value Update. rewrite (external_ports_preserve_instruction_port initial external result Update). exact Value.
+ - exact Prepare.
+ - unfold top_environment. rewrite Env. apply instruction_port_initial_value. exact Value.
+Qed.
+Print Assumptions circuit_instruction_port_prepared.

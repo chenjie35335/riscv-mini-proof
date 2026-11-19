@@ -1,0 +1,92 @@
+Require Import ReferenceRedirectSpine ReferenceControlStabilityHistory ReferenceControlExpressions ReferenceControlNodeCongruence3.
+From Coq Require Import ZArith Lia btauto.Btauto.
+From mathcomp Require Import ssreflect ssrbool ssrnat eqtype seq.
+From simplssrlib Require Import Var.
+From firrtl Require Import Env_with_implicit_widths HiEnv_with_implicit_widths HiFirrtl_with_implicit_widths Semantics_with_implicit_widths Semantics_with_memory.
+Require Import CoreSocModel ComparisonNodes.
+Local Open Scope N_scope.
+Local Opaque flat_statements flat_memories generated_modules generated_top.
+Require Import ReferenceRedirectSemantics FormalObservedHistory FormalLocalHistory ReferenceControlNodeCertificates2 ReferenceControlNodeCertificates3 ReferenceControlNodeCongruence2.
+From nbits Require Import NBits.
+Theorem reference_jal_alignment_history inputs path history limit reset time csr pc immediate :
+ (forall i,(i<=limit)%coq_nat ->VM.find 1(history i)=Some(Gval(Fuint 1)[::reset])) ->
+ (forall i,(i<limit)%coq_nat ->formal_value_iter(formal_invalid_policy inputs path)flat_memories(history i)false(history i)flat_statements=Some(history(S i))) ->
+ (127<=time)%coq_nat ->(time<limit)%coq_nat ->
+ VM.find 1750(history time)=Some(Gval(Fuint 32)csr) ->
+ VM.find 1749(history time)=Some(Gval(Fuint 32)pc) ->
+ VM.find 2552(history time)=Some(Gval(Fuint 32)immediate) ->size csr=32%nat ->
+ VM.find 2966(history time)=Some(Gval(Fuint 1)[::reference_redirect_aligned(N.testbit(to_N csr)2)(to_N pc+to_N immediate)]).
+Proof.
+ intros Resets Steps Lower Upper Csr Pc Immediate Size.
+ pose proof(Steps time Upper)as Step.
+ destruct (reference_redirect_node_equation reference_control_2_offsets reference_control_2_nodes 2807 reference_control_expr_2807 inputs path (history time) (history (S time)) reference_control_2_positions reference_control_2_safety reference_control_member_2807 ltac:(apply reference_control_ready_2807; first [exact (reference_control_ground_1750_history inputs path history limit reset Resets Steps time ltac:(lia) ltac:(lia))]) Step (reference_control_stable_2807_history inputs path history limit reset Resets Steps time (S time) ltac:(lia) ltac:(lia) ltac:(lia) ltac:(lia))) as [site2807 E2807].
+ unfold reference_control_expr_2807 in E2807.
+ destruct (reference_redirect_node_equation reference_control_2_offsets reference_control_2_nodes 2812 reference_control_expr_2812 inputs path (history time) (history (S time)) reference_control_2_positions reference_control_2_safety reference_control_member_2812 ltac:(apply reference_control_ready_2812; first [exact (reference_control_ground_1749_history inputs path history limit reset Resets Steps time ltac:(lia) ltac:(lia))]) Step (reference_control_stable_2812_history inputs path history limit reset Resets Steps time (S time) ltac:(lia) ltac:(lia) ltac:(lia) ltac:(lia))) as [site2812 E2812].
+ unfold reference_control_expr_2812 in E2812.
+ destruct (reference_redirect_node_equation reference_control_3_offsets reference_control_3_nodes 2950 reference_control_expr_2950 inputs path (history time) (history (S time)) reference_control_3_positions reference_control_3_safety reference_control_member_2950 ltac:(apply reference_control_ready_2950; first [exact (reference_control_ground_2807_history inputs path history limit reset Resets Steps time ltac:(lia) ltac:(lia))]) Step (reference_control_stable_2950_history inputs path history limit reset Resets Steps time (S time) ltac:(lia) ltac:(lia) ltac:(lia) ltac:(lia))) as [site2950 E2950].
+ unfold reference_control_expr_2950 in E2950.
+ destruct (reference_redirect_node_equation reference_control_3_offsets reference_control_3_nodes 2951 reference_control_expr_2951 inputs path (history time) (history (S time)) reference_control_3_positions reference_control_3_safety reference_control_member_2951 ltac:(apply reference_control_ready_2951; first [exact (reference_control_ground_2950_history inputs path history limit reset Resets Steps time ltac:(lia) ltac:(lia))]) Step (reference_control_stable_2951_history inputs path history limit reset Resets Steps time (S time) ltac:(lia) ltac:(lia) ltac:(lia) ltac:(lia))) as [site2951 E2951].
+ unfold reference_control_expr_2951 in E2951.
+ destruct (reference_redirect_node_equation reference_control_3_offsets reference_control_3_nodes 2952 reference_control_expr_2952 inputs path (history time) (history (S time)) reference_control_3_positions reference_control_3_safety reference_control_member_2952 ltac:(apply reference_control_ready_2952; first [exact (reference_control_ground_2951_history inputs path history limit reset Resets Steps time ltac:(lia) ltac:(lia))]) Step (reference_control_stable_2952_history inputs path history limit reset Resets Steps time (S time) ltac:(lia) ltac:(lia) ltac:(lia) ltac:(lia))) as [site2952 E2952].
+ unfold reference_control_expr_2952 in E2952.
+ destruct (reference_redirect_node_equation reference_control_3_offsets reference_control_3_nodes 2953 reference_control_expr_2953 inputs path (history time) (history (S time)) reference_control_3_positions reference_control_3_safety reference_control_member_2953 ltac:(apply reference_control_ready_2953; first [exact (reference_control_ground_2952_history inputs path history limit reset Resets Steps time ltac:(lia) ltac:(lia))]) Step (reference_control_stable_2953_history inputs path history limit reset Resets Steps time (S time) ltac:(lia) ltac:(lia) ltac:(lia) ltac:(lia))) as [site2953 E2953].
+ unfold reference_control_expr_2953 in E2953.
+ destruct (reference_redirect_node_equation reference_control_3_offsets reference_control_3_nodes 2954 reference_control_expr_2954 inputs path (history time) (history (S time)) reference_control_3_positions reference_control_3_safety reference_control_member_2954 ltac:(apply reference_control_ready_2954; first [exact (reference_control_ground_2552_history inputs path history limit reset Resets Steps time ltac:(lia) ltac:(lia))|exact (reference_control_ground_2812_history inputs path history limit reset Resets Steps time ltac:(lia) ltac:(lia))]) Step (reference_control_stable_2954_history inputs path history limit reset Resets Steps time (S time) ltac:(lia) ltac:(lia) ltac:(lia) ltac:(lia))) as [site2954 E2954].
+ unfold reference_control_expr_2954 in E2954.
+ destruct (reference_redirect_node_equation reference_control_3_offsets reference_control_3_nodes 2955 reference_control_expr_2955 inputs path (history time) (history (S time)) reference_control_3_positions reference_control_3_safety reference_control_member_2955 ltac:(apply reference_control_ready_2955; first [exact (reference_control_ground_2954_history inputs path history limit reset Resets Steps time ltac:(lia) ltac:(lia))]) Step (reference_control_stable_2955_history inputs path history limit reset Resets Steps time (S time) ltac:(lia) ltac:(lia) ltac:(lia) ltac:(lia))) as [site2955 E2955].
+ unfold reference_control_expr_2955 in E2955.
+ destruct (reference_redirect_node_equation reference_control_3_offsets reference_control_3_nodes 2956 reference_control_expr_2956 inputs path (history time) (history (S time)) reference_control_3_positions reference_control_3_safety reference_control_member_2956 ltac:(apply reference_control_ready_2956; first [exact (reference_control_ground_2955_history inputs path history limit reset Resets Steps time ltac:(lia) ltac:(lia))]) Step (reference_control_stable_2956_history inputs path history limit reset Resets Steps time (S time) ltac:(lia) ltac:(lia) ltac:(lia) ltac:(lia))) as [site2956 E2956].
+ unfold reference_control_expr_2956 in E2956.
+ destruct (reference_redirect_node_equation reference_control_3_offsets reference_control_3_nodes 2957 reference_control_expr_2957 inputs path (history time) (history (S time)) reference_control_3_positions reference_control_3_safety reference_control_member_2957 ltac:(apply reference_control_ready_2957; first [exact (reference_control_ground_2956_history inputs path history limit reset Resets Steps time ltac:(lia) ltac:(lia))]) Step (reference_control_stable_2957_history inputs path history limit reset Resets Steps time (S time) ltac:(lia) ltac:(lia) ltac:(lia) ltac:(lia))) as [site2957 E2957].
+ unfold reference_control_expr_2957 in E2957.
+ destruct (reference_redirect_node_equation reference_control_3_offsets reference_control_3_nodes 2958 reference_control_expr_2958 inputs path (history time) (history (S time)) reference_control_3_positions reference_control_3_safety reference_control_member_2958 ltac:(apply reference_control_ready_2958; first [exact (reference_control_ground_2952_history inputs path history limit reset Resets Steps time ltac:(lia) ltac:(lia))]) Step (reference_control_stable_2958_history inputs path history limit reset Resets Steps time (S time) ltac:(lia) ltac:(lia) ltac:(lia) ltac:(lia))) as [site2958 E2958].
+ unfold reference_control_expr_2958 in E2958.
+ destruct (reference_redirect_node_equation reference_control_3_offsets reference_control_3_nodes 2959 reference_control_expr_2959 inputs path (history time) (history (S time)) reference_control_3_positions reference_control_3_safety reference_control_member_2959 ltac:(apply reference_control_ready_2959; first [exact (reference_control_ground_2955_history inputs path history limit reset Resets Steps time ltac:(lia) ltac:(lia))]) Step (reference_control_stable_2959_history inputs path history limit reset Resets Steps time (S time) ltac:(lia) ltac:(lia) ltac:(lia) ltac:(lia))) as [site2959 E2959].
+ unfold reference_control_expr_2959 in E2959.
+ destruct (reference_redirect_node_equation reference_control_3_offsets reference_control_3_nodes 2960 reference_control_expr_2960 inputs path (history time) (history (S time)) reference_control_3_positions reference_control_3_safety reference_control_member_2960 ltac:(apply reference_control_ready_2960; first [exact (reference_control_ground_2959_history inputs path history limit reset Resets Steps time ltac:(lia) ltac:(lia))]) Step (reference_control_stable_2960_history inputs path history limit reset Resets Steps time (S time) ltac:(lia) ltac:(lia) ltac:(lia) ltac:(lia))) as [site2960 E2960].
+ unfold reference_control_expr_2960 in E2960.
+ destruct (reference_redirect_node_equation reference_control_3_offsets reference_control_3_nodes 2961 reference_control_expr_2961 inputs path (history time) (history (S time)) reference_control_3_positions reference_control_3_safety reference_control_member_2961 ltac:(apply reference_control_ready_2961; first [exact (reference_control_ground_2952_history inputs path history limit reset Resets Steps time ltac:(lia) ltac:(lia))]) Step (reference_control_stable_2961_history inputs path history limit reset Resets Steps time (S time) ltac:(lia) ltac:(lia) ltac:(lia) ltac:(lia))) as [site2961 E2961].
+ unfold reference_control_expr_2961 in E2961.
+ destruct (reference_redirect_node_equation reference_control_3_offsets reference_control_3_nodes 2962 reference_control_expr_2962 inputs path (history time) (history (S time)) reference_control_3_positions reference_control_3_safety reference_control_member_2962 ltac:(apply reference_control_ready_2962; first [exact (reference_control_ground_2955_history inputs path history limit reset Resets Steps time ltac:(lia) ltac:(lia))]) Step (reference_control_stable_2962_history inputs path history limit reset Resets Steps time (S time) ltac:(lia) ltac:(lia) ltac:(lia) ltac:(lia))) as [site2962 E2962].
+ unfold reference_control_expr_2962 in E2962.
+ destruct (reference_redirect_node_equation reference_control_3_offsets reference_control_3_nodes 2963 reference_control_expr_2963 inputs path (history time) (history (S time)) reference_control_3_positions reference_control_3_safety reference_control_member_2963 ltac:(apply reference_control_ready_2963; first [exact (reference_control_ground_2962_history inputs path history limit reset Resets Steps time ltac:(lia) ltac:(lia))]) Step (reference_control_stable_2963_history inputs path history limit reset Resets Steps time (S time) ltac:(lia) ltac:(lia) ltac:(lia) ltac:(lia))) as [site2963 E2963].
+ unfold reference_control_expr_2963 in E2963.
+ destruct (reference_redirect_node_equation reference_control_3_offsets reference_control_3_nodes 2964 reference_control_expr_2964 inputs path (history time) (history (S time)) reference_control_3_positions reference_control_3_safety reference_control_member_2964 ltac:(apply reference_control_ready_2964; first [exact (reference_control_ground_2961_history inputs path history limit reset Resets Steps time ltac:(lia) ltac:(lia))|exact (reference_control_ground_2963_history inputs path history limit reset Resets Steps time ltac:(lia) ltac:(lia))]) Step (reference_control_stable_2964_history inputs path history limit reset Resets Steps time (S time) ltac:(lia) ltac:(lia) ltac:(lia) ltac:(lia))) as [site2964 E2964].
+ unfold reference_control_expr_2964 in E2964.
+ destruct (reference_redirect_node_equation reference_control_3_offsets reference_control_3_nodes 2965 reference_control_expr_2965 inputs path (history time) (history (S time)) reference_control_3_positions reference_control_3_safety reference_control_member_2965 ltac:(apply reference_control_ready_2965; first [exact (reference_control_ground_2958_history inputs path history limit reset Resets Steps time ltac:(lia) ltac:(lia))|exact (reference_control_ground_2960_history inputs path history limit reset Resets Steps time ltac:(lia) ltac:(lia))|exact (reference_control_ground_2964_history inputs path history limit reset Resets Steps time ltac:(lia) ltac:(lia))]) Step (reference_control_stable_2965_history inputs path history limit reset Resets Steps time (S time) ltac:(lia) ltac:(lia) ltac:(lia) ltac:(lia))) as [site2965 E2965].
+ unfold reference_control_expr_2965 in E2965.
+ destruct (reference_redirect_node_equation reference_control_3_offsets reference_control_3_nodes 2966 reference_control_expr_2966 inputs path (history time) (history (S time)) reference_control_3_positions reference_control_3_safety reference_control_member_2966 ltac:(apply reference_control_ready_2966; first [exact (reference_control_ground_2953_history inputs path history limit reset Resets Steps time ltac:(lia) ltac:(lia))|exact (reference_control_ground_2957_history inputs path history limit reset Resets Steps time ltac:(lia) ltac:(lia))|exact (reference_control_ground_2965_history inputs path history limit reset Resets Steps time ltac:(lia) ltac:(lia))]) Step (reference_control_stable_2966_history inputs path history limit reset Resets Steps time (S time) ltac:(lia) ltac:(lia) ltac:(lia) ltac:(lia))) as [site2966 E2966].
+ unfold reference_control_expr_2966 in E2966.
+ rewrite E2966.
+   repeat (progress (cbn [eval_hfexpr_validif_policy eval_href_validif_policy]; try unfold eval_type_of_expr; cbn [type_of_expr' eval_type_of_ref]; rewrite ?E2966 ?E2965 ?E2964 ?E2963 ?E2962 ?E2961 ?E2960 ?E2959 ?E2958 ?E2957 ?E2956 ?E2955 ?E2954 ?E2953 ?E2952 ?E2951 ?E2950 ?E2812 ?E2807 ?Csr ?Pc ?Immediate)).
+   cbn [eval_hfexpr_validif_policy eval_href_validif_policy].
+   rewrite (reference_redirect_csr_compressed csr Size).
+   destruct (N.testbit (to_N csr) 2);
+   cbn [eval_binop eval_binop_basic absorbing_bit exact_bit refine_boolean_result eval_unop type_of_val ftype_mux make_ftype_explicit extend_hvalue_as_type size ltn leq zext_to zext zeros copy to_N foldr];
+   cbv -[from_N reference_redirect_aligned].
+   + change (Some (Gval (Fuint 1) [::to_N (take 1 (take 32 (from_N 33 (to_N pc + to_N immediate)))) == 0]) = Some (Gval (Fuint 1) [::reference_redirect_aligned true (to_N pc + to_N immediate)])).
+     rewrite (reference_redirect_alignment_select true (take 32 (from_N 33 (to_N pc + to_N immediate)))).
+     rewrite reference_redirect_aligned_take32_from33. reflexivity.
+   + change (Some (Gval (Fuint 1) [::to_N (take 2 (take 32 (from_N 33 (to_N pc + to_N immediate)))) == 0]) = Some (Gval (Fuint 1) [::reference_redirect_aligned false (to_N pc + to_N immediate)])).
+     rewrite (reference_redirect_alignment_select false (take 32 (from_N 33 (to_N pc + to_N immediate)))).
+     rewrite reference_redirect_aligned_take32_from33. reflexivity.
+Qed.
+Theorem reference_jal_alignment_observed memory inputs k observed pc immediate csr :
+ generated_observe memory inputs k=Some observed ->generated_legal_trace memory inputs k ->
+ VM.find 7331(top_environment observed)=Some(Gval(Fuint 32)pc) ->
+ VM.find 2552(top_environment observed)=Some(Gval(Fuint 32)immediate) ->
+ VM.find 7332(top_environment observed)=Some(Gval(Fuint 32)csr) ->size pc=32%nat ->size csr=32%nat ->
+ VM.find 2966(top_environment observed)=Some(Gval(Fuint 1)[::reference_redirect_aligned(N.testbit(to_N csr)2)(to_N pc+to_N immediate)]).
+Proof.
+ intros Observe Legal Pc Immediate Csr PcSize CsrSize.
+ destruct(observed_history memory inputs k observed Observe Legal)as[reset[history[Last[Steps Resets]]]].
+ assert(H7331:VM.find 7331(history 9258%nat)=Some(Gval(Fuint 32)pc)).
+ { rewrite(reference_control_stable_7331_history (generated_observation_input inputs k)nil history 9259 reset Resets Steps 9258 9259 ltac:(vm_compute;lia)ltac:(vm_compute;lia)ltac:(vm_compute;lia)ltac:(vm_compute;lia))Last;exact Pc. }
+ assert(H2552:VM.find 2552(history 9258%nat)=Some(Gval(Fuint 32)immediate)).
+ { rewrite(reference_control_stable_2552_history (generated_observation_input inputs k)nil history 9259 reset Resets Steps 9258 9259 ltac:(vm_compute;lia)ltac:(vm_compute;lia)ltac:(vm_compute;lia)ltac:(vm_compute;lia))Last;exact Immediate. }
+ assert(H7332:VM.find 7332(history 9258%nat)=Some(Gval(Fuint 32)csr)).
+ { rewrite(reference_control_stable_7332_history (generated_observation_input inputs k)nil history 9259 reset Resets Steps 9258 9259 ltac:(vm_compute;lia)ltac:(vm_compute;lia)ltac:(vm_compute;lia)ltac:(vm_compute;lia))Last;exact Csr. }
+ destruct(reference_redirect_aliases_history (generated_observation_input inputs k)nil history 9259 reset 9258 pc csr Resets Steps ltac:(vm_compute;lia)ltac:(vm_compute;lia)H7331 H7332 PcSize CsrSize)as[PcAlias CsrAlias].
+ pose proof(reference_jal_alignment_history (generated_observation_input inputs k)nil history 9259 reset 9258 csr pc immediate Resets Steps ltac:(vm_compute;lia)ltac:(vm_compute;lia)CsrAlias PcAlias H2552 CsrSize)as Value.
+ rewrite(reference_control_stable_2966_history (generated_observation_input inputs k)nil history 9259 reset Resets Steps 9258 9259 ltac:(vm_compute;lia)ltac:(vm_compute;lia)ltac:(vm_compute;lia)ltac:(vm_compute;lia))Last in Value;exact Value.
+Qed.

@@ -1,0 +1,5 @@
+Require Import CoreSocModel ComparisonNodes DataAddressPositionCertificate X0ConcreteSafetyCertificate.
+Theorem data_address_actual_nodes_safe :
+ selected_node_safety flat_memories flat_statements data_address_node_offsets flat_statements = true.
+Proof. vm_compute. reflexivity. Qed.
+Print Assumptions data_address_actual_nodes_safe.
