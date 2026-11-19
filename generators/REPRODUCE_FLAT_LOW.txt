@@ -1,0 +1,31 @@
+展平 Low FIRRTL 到 Coq 的隔离复现
+
+在仓库根目录运行：
+  python3 formal/generators/reproduce-flat-low.py
+
+依赖：Python3、Java、项目已解析的 Mill runClasspath、OCaml/dune，以及当前
+firrtl2coq构建所需Coq库环境（本次使用Coq8.20.1/OCaml4.14.2）。缺少classpath
+时先运行 mill chiselModule.runClasspath，可能需要下载构建依赖。
+脚本使用固定已有 formal/CoreSoc.hi.fir，不重新运行Scala elaboration；其hash
+进入报告。因此验证的是本次已证明输入的降低/转换复现，不声称新Scala改动
+也已证明。
+
+实际降低命令由lower-flat-firrtl.py构造，classpath读取
+out/chiselModule/runClasspath/meta.json：
+  java -cp <cached classpath> firrtl.stage.FirrtlMain \
+    -i <absolute formal/CoreSoc.hi.fir> -o CoreSoc.lo.fir \
+    -X low --inline CoreSoc --target-dir <fresh temporary directory>
+本仓库缓存FIRRTL jar版本为1.6.0。先降低和inline到1模块0实例，再转换。
+
+实际转换命令（cwd=firrtl2coq/src/ocaml）：
+  dune exec ./bin/main.exe -- <temp>/CoreSoc.lo.fir <temp>/CoreSoc.v
+main.ml确认两个位置参数为输入FIRRTL及输出Coq文件。
+translator HEAD为2824907e13695f127c09be49dfe69a0131822b58；当前有未提交
+Coq8.20兼容等修改，故脚本同时记录git status、diff hash，而非仅记录HEAD。
+
+所有生成输出、日志、reproduction.json都在新建临时目录中，路径打印到stdout。
+脚本不发布、不替换任何正式CoreSoc.v/lo.fir/CoreSocModel.v，并核查这些文件
+前后hash相同；检查重现输出与已证明flat-low文件逐字节hash一致，不一致即失败。
+45 assert和1 assume必须保持原始数目，不增加断言或假设。
+生成Coq含原始45条Admitted；转换重现成功本身不是证明成功。最终证明仍使用
+独立GeneratedAssertion0..44及AllOriginalAssertions，另行编译和公理审计。

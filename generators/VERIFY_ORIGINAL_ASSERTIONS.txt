@@ -1,0 +1,48 @@
+验证全部原始断言
+
+证明入口：formal/flat-low/staged-integration/AllOriginalAssertions.v
+该定理在原模型 Observe 和 Legal 条件下，合取全部 45 个原始断言。
+每个 GeneratedAssertionN.v 保留原始 generated_assert_N 的定理声明。
+模型来源与复现见 REPRODUCE_FLAT_LOW.txt。
+
+完整验证（从仓库根目录执行）：
+  python3 formal/generators/verify-clean-assertions.py --jobs 2
+
+脚本输出临时快照路径。只复制源码，不复制工作区 .vo；通过 coqdep
+计算实际依赖闭包，并重建本地 FIRRTL 和位向量库。依次运行：
+  1. 全部实际依赖及 AllOriginalAssertions 的 Coq 编译。
+  2. Print Assumptions all_original_assertions。
+  3. coqchk AllOriginalAssertions（递归检查，不使用 -norec 或 -admit）。
+
+脚本只允许既有 ftype_eqn_eq 和 ffield_eqn_eq 两个库公理。
+原始 CoreSoc.v 中的待证声明不参与编译；CoreSocModel.v 必须是原始
+文件首条断言之前的完整定义前缀。两份原始 CoreSoc.v 均不能修改。
+
+失败后先修复工作区源码，再恢复同一快照：
+  python3 formal/generators/verify-clean-assertions.py --resume SNAPSHOT --jobs 2
+恢复前校验快照产物哈希；源码变化会使依赖闭包中受影响的产物失效。
+运行中的快照禁止恢复或修改。--plan-only 仅检查依赖计划，不证明完成。
+
+验证成功后生成最终报告：
+  python3 formal/generators/finalize-proof-verification.py SNAPSHOT
+该步骤复核源码/产物/日志/工具哈希、45 条原始声明及汇总覆盖范围、
+模型不变和转换复现基线，成功才更新 original-assertion-proof-audit.json。
+
+verify-assertion-snapshot.py 是增量诊断工具，会复用工作区产物；
+其结果不能替代以上源码重建和最终认证。不要用旧的逐文件审计脚本
+覆盖新的完整验证报告。
+
+当前完成状态以成功的完整验证报告为准；仅有 .vo 或历史单独编译
+记录不表示当前源码的最终验证已经通过。
+
+并行内核验证（干净重编译及假设审计成功、串行 coqchk 完成依赖加载后）：
+  python3 formal/generators/verify-parallel-kernel.py SNAPSHOT --jobs 3 --bytecode-compiler yes --run
+  python3 formal/generators/finalize-parallel-verification.py PARALLEL_REPORT
+
+并行脚本将所有本地模块划分为互不遗漏的显式 -norec 检查目标，另对
+全部外部依赖递归检查；只有各组成功且合并覆盖完整依赖闭包才通过。
+bytecode-compiler yes 使用 Coq 的 VM 转换检查，不使用 unchecked cast。
+最终认证独立核对原始日志、覆盖范围、源码/产物/工具哈希及原始断言，
+写入并行报告旁的 final-parallel-verification.json，不修改串行报告状态。
+串行检查尚在运行时，认证会明确记录构建证据为完整源码编译日志及
+并行检查前后的产物哈希，不声称已有构建完成时的历史产物哈希。
