@@ -1,0 +1,4 @@
+[submodule "firrtl2coq"]
+	path = firrtl2coq
+	url = https://github.com/wky17/firrtl2coq
+	branch = lyc-fix-prop
